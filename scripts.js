@@ -19,13 +19,35 @@ function calcValues() {
     var totalBatteries = float2int(totalDoubles / doublesPerBattery)
     document.getElementById('staticTotalBatteries').value = totalBatteries
 
+    // staticLeftBatteries
     if (totalDoubles > 0 && doublesPerBattery > 0 && totalBatteries > 0) {
-        var leftBatteries = document.getElementById('staticLeftBatteries').value
+        var leftBatteries = document.getElementById('staticLeftBatteries')
         var batteryControl = totalDoubles - (doublesPerBattery * totalBatteries)
         if ((doublesPerBattery / 2) > batteryControl) {
-            document.getElementById('staticLeftBatteries').innerHTML = 'Bateria restante: ' + batteryControl + ' - Será distribuída'
+            leftBatteries.innerHTML = 'Bateria restante: ' + batteryControl + ' - Será distribuída'
         } else {
-            document.getElementById('staticLeftBatteries').innerHTML = 'Bateria restante: ' + batteryControl + ' - Diminua duplas por bateria'
+            leftBatteries.innerHTML = 'Bateria restante: ' + batteryControl + ' - Diminua duplas por bateria'
+        }
+    }
+
+    var staticAvegrageDisputes = 0
+    // staticAvegrageDisputes
+    if (totalPeople > 0 && totalBatteries > 0) {
+        staticAvegrageDisputes = (totalPeople - 1) / totalBatteries
+        document.getElementById('staticAvegrageDisputes').value = staticAvegrageDisputes.toFixed(2)
+    }
+
+    //alerts
+    document.getElementById('alertOk').setAttribute("hidden", true);
+    document.getElementById('alertNotOk').setAttribute("hidden", true);
+
+    var inputMaxRepetition = document.getElementById('inputMaxRepetition').value
+
+    if (staticAvegrageDisputes > 0 && inputMaxRepetition > 0) {
+        if (inputMaxRepetition >= staticAvegrageDisputes) {
+            document.getElementById('alertOk').removeAttribute("hidden");
+        } else {
+            document.getElementById('alertNotOk').removeAttribute("hidden");
         }
     }
 }
@@ -43,7 +65,7 @@ function addNamesFields() {
     }
 
     for (i = 0; i < number; i++) {
-        competidor = i + 1
+        var competidor = i + 1
         var div = document.createElement("div");
         div.className = "col-sm-3"
 
@@ -55,6 +77,7 @@ function addNamesFields() {
         input.className = "form-control"
         input.type = "text";
         input.id = "member" + competidor;
+        input.value = ""
 
         div.appendChild(label);
         div.appendChild(input);
@@ -62,4 +85,51 @@ function addNamesFields() {
 
         document.getElementById('containerNames').removeAttribute("hidden");
     }
+}
+
+function generateBatteries() {
+    // teste com 4, 3, 3
+    document.getElementById('alertCompetitors').setAttribute("hidden", true);
+
+    var names = []
+    var dynamicDivs = document.getElementById("dynamicRowNames").children;
+
+    // get all names
+    for (var i = 1; i <= dynamicDivs.length; i++) {
+        n = document.getElementById('member' + i).value
+        if (n.replace(/\s/g, '') == '') {
+            document.getElementById('alertCompetitors').removeAttribute("hidden");
+        } else {
+            names.push(n)
+        }
+    }
+
+    var inputTotalPeople = document.getElementById('inputTotalPeople').value
+    var inputDoublesPerBattery = document.getElementById('inputDoublesPerBattery').value
+    var inputMaxRepetition = document.getElementById('inputMaxRepetition').value
+
+    for (var i = 0; i < inputTotalPeople; i++) {
+        firstCompetitor = getFirstCompetitor(inputTotalPeople, names)
+        secondCompetitor = getSecondCompetitor(inputTotalPeople, names, firstCompetitor)
+        console.log(firstCompetitor + ' x ' + secondCompetitor)
+    }
+
+
+    // show container
+
+    document.getElementById('containerDoubles').removeAttribute("hidden");
+}
+
+function getFirstCompetitor(inputTotalPeople, names) {
+    var r = Math.floor(Math.random() * inputTotalPeople);
+    return names[r];
+}
+
+function getSecondCompetitor(inputTotalPeople, names, firstCompetitor) {
+    var r = Math.floor(Math.random() * inputTotalPeople);
+    secondCompetitor = names[r]
+    if (firstCompetitor == secondCompetitor) {
+        return getSecondCompetitor(inputTotalPeople, names, firstCompetitor)
+    }
+    return secondCompetitor;
 }
