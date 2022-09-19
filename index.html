@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>CIRCUITO DE RANCH SORTING</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Album example · Bootstrap v5.2</title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/album/">
+    <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="scripts.js"></script>
+
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+        <span class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+            <svg class="bi me-2" width="40" height="32">></svg>
+            <span class="fs-4">CIRCUITO DE RANCH SORTING</span>
+        </span>
+    </header>
+
+    <div class="container text-center">
+        <div class="row justify-content-center mb-4">
+            <div class="col-6">
+                <div class="form-group row mb-3">
+                    <label for="inputData" class="col-sm-8 col-form-label">Data inicio competição:</label>
+                    <div class="col-sm-4">
+                        <input type="date" class="form-control" id="inputData" value="">
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="inputTotalPeople" class="col-sm-8 col-form-label">Total de competidores:</label>
+                    <div class="col-sm-4">
+                        <input type="number" class="form-control" id="inputTotalPeople"
+                            onchange="calcValues()">
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="inputDoublesPerBattery" class="col-sm-8 col-form-label">Duplas por bateria:</label>
+                    <div class="col-sm-4">
+                        <input type="number" class="form-control" id="inputDoublesPerBattery"
+                            onchange="calcValues()">
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="inputMaxRepetition" class="col-sm-8 col-form-label">Máximo de disputas por
+                        competidor na bateria:</label>
+                    <div class="col-sm-4">
+                        <input type="number" class="form-control" id="inputMaxRepetition"
+                            onchange="calcValues()">
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group row mb-3">
+                    <label for="staticTotalDoubles" class="col-sm-8 col-form-label">Total de Duplas:</label>
+                    <div class="col-sm-3">
+                        <input type="text" readonly class="form-control-plaintext" id="staticTotalDoubles" value="0">
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label id="labelStaticTotalBatteries" for="staticTotalBatteries"
+                        class="col-sm-8 col-form-label">Total de baterias com 0
+                        duplas:</label>
+                    <div class="col-sm-3">
+                        <input type="text" readonly class="form-control-plaintext" id="staticTotalBatteries" value="0">
+                    </div>
+                </div>
+                <div class="form-group row mb-3">
+                    <label id="staticLeftBatteries" class="col-sm-8 col-form-label">Bateria restante: 0</label>
+                </div>
+                <div class="form-group row mb-3">
+                    <label for="staticAvegrageDisputes" class="col-sm-8 col-form-label">Média de disputas por competidor
+                        na bateria:</label>
+                    <div class="col-sm-3">
+                        <input type="text" readonly class="form-control-plaintext" id="staticAvegrageDisputes"
+                            value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row mb-6">
+            <div class="col">
+                <button class="btn btn-primary" onclick="addNamesFields()">Inserir nomes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="containerNames" class="container text-center" hidden>
+        <div id="dynamicRowNames" class="row mb-4">
+        </div>
+        <div class="form-group row">
+            <div class="col">
+                <button class="btn btn-primary">Gerar baterias</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
