@@ -38,16 +38,17 @@ function calcValues() {
     }
 
     //alerts
-    document.getElementById('alertOk').setAttribute("hidden", true);
-    document.getElementById('alertNotOk').setAttribute("hidden", true);
+    hiddenAlerts()
 
     var inputMaxRepetition = document.getElementById('inputMaxRepetition').value
 
     if (staticAvegrageDisputes > 0 && inputMaxRepetition > 0) {
         if (inputMaxRepetition >= staticAvegrageDisputes) {
             document.getElementById('alertOk').removeAttribute("hidden");
+            document.getElementById('brnInsertNames').removeAttribute("disabled");
         } else {
             document.getElementById('alertNotOk').removeAttribute("hidden");
+            document.getElementById('brnInsertNames').setAttribute("disabled", true);
         }
     }
 }
@@ -56,13 +57,44 @@ function float2int(value) {
     return value | 0;
 }
 
-function addNamesFields() {
-    var number = document.getElementById("inputTotalPeople").value;
-    var row = document.getElementById("dynamicRowNames");
+function clean() {
+    document.getElementById('inputTotalPeople').value = 0
+    document.getElementById('inputDoublesPerBattery').value = 0
+    document.getElementById('inputMaxRepetition').value = 0
+    hiddenAlerts()
+    document.getElementById('staticTotalDoubles').value = 0
+    document.getElementById('staticTotalBatteries').value = 0
+    document.getElementById('staticLeftBatteries').innerHTML = 'Bateria restante: 0'
+    document.getElementById('staticAvegrageDisputes').value = 0
+    removeNamesRows()
+    document.getElementById('containerNames').setAttribute("hidden", true);
+    removCompetitorsRows()
+    document.getElementById('containerDoubles').setAttribute("hidden", true);
+}
 
+function hiddenAlerts() {
+    document.getElementById('alertOk').setAttribute("hidden", true);
+    document.getElementById('alertNotOk').setAttribute("hidden", true);
+}
+
+function removeNamesRows() {
+    var row = document.getElementById("dynamicRowNames");
     while (row.hasChildNodes()) {
         row.removeChild(row.lastChild);
     }
+}
+
+function removCompetitorsRows() {
+    var tbody = document.getElementById("tableCompetitors");
+    while (tbody.hasChildNodes()) {
+        tbody.removeChild(tbody.lastChild);
+    }
+}
+
+function addNamesFields() {
+    var number = document.getElementById("inputTotalPeople").value;
+
+    removeNamesRows()
 
     for (i = 0; i < number; i++) {
         var competidor = i + 1
@@ -81,7 +113,7 @@ function addNamesFields() {
 
         div.appendChild(label);
         div.appendChild(input);
-        row.appendChild(div);
+        document.getElementById("dynamicRowNames").appendChild(div);
 
         document.getElementById('containerNames').removeAttribute("hidden");
     }
@@ -90,12 +122,44 @@ function addNamesFields() {
 function generateBatteries() {
     // teste com 4, 3, 3
     document.getElementById('alertCompetitors').setAttribute("hidden", true);
+    document.getElementById('containerDoubles').setAttribute("hidden", true);
 
+    var names = getCompetitorsNames()
+    if (names.length == 0) {
+        return
+    }
+
+    var inputTotalPeople = document.getElementById('inputTotalPeople').value
+    var inputDoublesPerBattery = document.getElementById('inputDoublesPerBattery').value
+    var inputMaxRepetition = document.getElementById('inputMaxRepetition').value
+    var staticTotalDoubles = document.getElementById('staticTotalDoubles').value
+
+    var battery = 1
+    var doublesPerBattery = 0
+    for (var i = 0; i < staticTotalDoubles; i++) {
+        var repetitionNamesPerBattery = []
+
+        var firstCompetitor = getFirstCompetitor(inputTotalPeople, names, repetitionNamesPerBattery, inputMaxRepetition)
+        var secondCompetitor = getSecondCompetitor(inputTotalPeople, names, firstCompetitor, repetitionNamesPerBattery, inputMaxRepetition)
+
+        appendTableRow(i + 1, battery, firstCompetitor, secondCompetitor)
+
+        // battery control
+        doublesPerBattery++
+        if (doublesPerBattery >= inputDoublesPerBattery) {
+            battery++
+            doublesPerBattery = 0
+            repetitionNamesPerBattery = []
+        }
+    }
+
+    document.getElementById('containerDoubles').removeAttribute("hidden");
+}
+
+function getCompetitorsNames() {
     var names = []
-    var dynamicDivs = document.getElementById("dynamicRowNames").children;
-
-    // get all names
-    for (var i = 1; i <= dynamicDivs.length; i++) {
+    var dynamicRowNames = document.getElementById("dynamicRowNames").children;
+    for (var i = 1; i <= dynamicRowNames.length; i++) {
         n = document.getElementById('member' + i).value
         if (n.replace(/\s/g, '') == '') {
             document.getElementById('alertCompetitors').removeAttribute("hidden");
@@ -104,32 +168,66 @@ function generateBatteries() {
         }
     }
 
-    var inputTotalPeople = document.getElementById('inputTotalPeople').value
-    var inputDoublesPerBattery = document.getElementById('inputDoublesPerBattery').value
-    var inputMaxRepetition = document.getElementById('inputMaxRepetition').value
-
-    for (var i = 0; i < inputTotalPeople; i++) {
-        firstCompetitor = getFirstCompetitor(inputTotalPeople, names)
-        secondCompetitor = getSecondCompetitor(inputTotalPeople, names, firstCompetitor)
-        console.log(firstCompetitor + ' x ' + secondCompetitor)
-    }
-
-
-    // show container
-
-    document.getElementById('containerDoubles').removeAttribute("hidden");
+    return names
 }
 
-function getFirstCompetitor(inputTotalPeople, names) {
+function getFirstCompetitor(inputTotalPeople, names, repetitionNamesPerBattery, inputMaxRepetition) {
     var r = Math.floor(Math.random() * inputTotalPeople);
-    return names[r];
+    var sortedName = names[r]
+    if (isInvalidName(sortedName, repetitionNamesPerBattery, inputMaxRepetition)) {
+        return getFirstCompetitor(inputTotalPeople, names, repetitionNamesPerBattery, inputMaxRepetition)
+    }
+
+    return sortedName;
 }
 
-function getSecondCompetitor(inputTotalPeople, names, firstCompetitor) {
+function getSecondCompetitor(inputTotalPeople, names, firstCompetitor, repetitionNamesPerBattery, inputMaxRepetition) {
     var r = Math.floor(Math.random() * inputTotalPeople);
-    secondCompetitor = names[r]
-    if (firstCompetitor == secondCompetitor) {
-        return getSecondCompetitor(inputTotalPeople, names, firstCompetitor)
+    var sortedName = names[r]
+    if (firstCompetitor == sortedName || isInvalidName(sortedName, repetitionNamesPerBattery, inputMaxRepetition)) {
+        return getSecondCompetitor(inputTotalPeople, names, firstCompetitor, repetitionNamesPerBattery, inputMaxRepetition)
     }
-    return secondCompetitor;
+    return sortedName;
+}
+
+function isInvalidName(sortedName, repetitionNamesPerBattery, inputMaxRepetition) {
+    let counter = 0;
+    for (n of repetitionNamesPerBattery) {
+        if (n == sortedName) {
+            counter++;
+        }
+    };
+
+    return counter > inputMaxRepetition
+}
+
+function appendTableRow(double, battery, firstCompetitor, secondCompetitor) {
+    var th = document.createElement("th")
+    th.setAttribute("scope", "row")
+    th.innerHTML = double
+    var td1 = document.createElement("td")
+    td1.innerHTML = battery
+    var td2 = document.createElement("td")
+    td2.innerHTML = firstCompetitor
+    var td3 = document.createElement("td")
+    td3.innerHTML = "&"
+    var td4 = document.createElement("td")
+    td4.innerHTML = secondCompetitor
+
+    var tr = document.createElement("tr")
+    tr.appendChild(th);
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tr.appendChild(td4);
+    document.getElementById("tableCompetitors").appendChild(tr)
+}
+
+function exportTableNewTab() {
+    var tab = document.getElementById("divTableDoubles")
+    var html = '<!doctype html><html lang="en"> <head> <title>CIRCUITO DE RANCH SORTING</title> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1"><link href="assets/dist/css/bootstrap.min.css" rel="stylesheet"> </head> <body> <div class="container"> <div class="row mb-4">TABLE_HERE</div> </div> </body></html>'
+    html = html.replace('TABLE_HERE', tab.innerHTML)
+
+    var opened = window.open("");
+    opened.document.write(html);
 }

@@ -5,9 +5,7 @@
     <title>CIRCUITO DE RANCH SORTING</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Album example · Bootstrap v5.2</title>
 
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.2/examples/album/">
     <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -87,7 +85,11 @@
         </div>
         <div class="form-group row mb-4">
             <div class="col">
-                <button class="btn btn-primary" onclick="addNamesFields()">Inserir nomes</button>
+                <button id="brnInsertNames" class="btn btn-primary" disabled onclick="addNamesFields()">Inserir
+                    nomes</button>
+            </div>
+            <div class="col">
+                <button class="btn btn-secondary" onclick="clean()">Limpar tudo</button>
             </div>
         </div>
     </div>
@@ -95,18 +97,36 @@
     <div id="containerNames" class="container text-center" hidden>
         <div id="dynamicRowNames" class="row mb-4">
         </div>
-        <div class="form-group row mb-4">
+        <div id="alertCompetitors" class="alert alert-warning" role="alert" hidden>
+            Todos os competidores devem estar preenchidos
+        </div>
+        <div class="form-group row mb-5">
             <div class="col">
                 <button class="btn btn-primary" onclick="generateBatteries()">Gerar baterias</button>
             </div>
         </div>
-        <div id="alertCompetitors" class="alert alert-warning" role="alert" hidden>
-            Todos os competidores devem estar preenchidos
-        </div>
     </div>
 
-    <div id="containerDoubles" class="container text-center" hidden>
-        <div id="dynamicRowDoubles" class="row mb-4">
+    <div id="containerDoubles" class="container" hidden>
+        <div id="divTableDoubles" class="row mb-4">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 15%" scope="col">Dupla</th>
+                        <th style="width: 15%" scope="col">Bateria</th>
+                        <th scope="col">Competidor 1</th>
+                        <th scope="col"></th>
+                        <th scope="col">Competidor 2</th>
+                    </tr>
+                </thead>
+                <tbody id="tableCompetitors">
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group row mb-5">
+            <div class="col">
+                <button class="btn btn-primary" onclick="exportTableNewTab()">Abrir tabela em nova janela</button>
+            </div>
         </div>
     </div>
 </body>
