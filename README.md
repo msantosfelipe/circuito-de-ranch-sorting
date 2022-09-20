@@ -6,7 +6,7 @@ Web app to sort competition couples participants
 - Bootstrap 5.2
 - JS
 
-# Deploy
-at AWS Amplify - no
-at Netlify - no
-at Github pages - yes
+# Deploy options
+- at AWS Amplify (no);
+- at Netlify (no);
+- at Github pages (yes);
